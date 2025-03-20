@@ -1,0 +1,23 @@
+{
+  "name": "Hungry & Thrifty (By En0ri4n)",
+  "description": "Hungry & Thrifty allows you to apply some rules to a list of food products. You can reorder by price, and remove products with a price too high for you.",
+  "version": "1.2",
+  "manifest_version": 3,
+  "author": {
+    "email": "enorian.rajo@gmail.com"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "logo.png"
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "permissions": ["tabs", "activeTab", "scripting", "storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.hoplunch.com/*", "https://www.refectory.fr/*"],
+      "js": ["scripts/content.js"]
+    }
+  ]
+}
