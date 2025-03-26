@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.hoplunch.com/*", "https://www.refectory.fr/*"],
-      "js": ["scripts/content.js"]
+      "js": ["common/shared.js", "scripts/content.js"]
     }
   ]
 }

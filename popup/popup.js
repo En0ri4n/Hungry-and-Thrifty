@@ -1,39 +1,26 @@
-const sortFilterSelect = document.getElementById("sort-filter");
-const priceFilterCheckbox = document.getElementById('price-filter');
-const maxPriceSlider = document.getElementById('max-price');
-const resetButton = document.getElementById('reset');
+import '../common/shared.js';
 
-sortFilterSelect.addEventListener("change", (evt) => {
-    sendMessageToContent('sort;' + evt.target.value);
-    save();
+globalThis.SORT_FILTER.on('change', (evt) => {});
+globalThis.PRICE_FILTER_ACTIVE.on('change', (evt) => {
+    PRICE_FILTER.getElement().disabled = !evt.target.checked;
 });
 
-priceFilterCheckbox.addEventListener('change', (evt) => {
-    maxPriceSlider.disabled = !evt.target.checked;
-    sendMessageToContent('maxPriceToggle;' + evt.target.checked)
-    save();
-});
-
-maxPriceSlider.addEventListener('input', (evt) => {
+globalThis.PRICE_FILTER.on('input', (evt) => {
     document.getElementById('price-filter-label').querySelector('.filter-display-value').innerText = evt.target.value;
-    sendMessageToContent('price;' + evt.target.value);
-    save();
 });
 
-resetButton.addEventListener('click', (evt) => {
-    sortFilterSelect.selectedIndex = 0; // Reset sort
-    priceFilterCheckbox.checked = false;
-    maxPriceSlider.value = 10; // Reset max price
-    maxPriceSlider.dispatchEvent(new Event('input')); // Dispatch event to update display
-    sendMessageToContent('reset');
-    save();
+
+globalThis.SEARCH_FILTER.on('input', (evt) => {})
+globalThis.SEARCH_FILTER_ACTIVE.on('change', (evt) => {
+    globalThis.SEARCH_FILTER.getElement().disabled = !evt.target.checked;
 });
 
-function sendMessageToContent(msg) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { message: msg });
-    });
-}
+globalThis.RESET_FILTER.on('click', (evt) => {
+    globalThis.SORT_FILTER.getElement().selectedIndex = 0; // Reset sort
+    globalThis.PRICE_FILTER_ACTIVE.getElement().checked = false;
+    globalThis.PRICE_FILTER.getElement().value = 10; // Reset max price
+    globalThis.PRICE_FILTER.getElement().dispatchEvent(new Event('input')); // Dispatch event to update display
+});
 
 function getCurrentUrl() {
     return new Promise((resolve, reject) => {
@@ -62,18 +49,19 @@ async function onLoad() {
     }
 
     chrome.storage.local.get("popupState", data => {
-        sortFilterSelect.selectedIndex = data.popupState.sortOrderIndex;
-        priceFilterCheckbox.checked = data.popupState.priceFilterCheck;
-        maxPriceSlider.value = data.popupState.maxPrice;
+        globalThis.SORT_FILTER.getElement().selectedIndex = data.popupState.sortOrderIndex;
+        globalThis.PRICE_FILTER_ACTIVE.getElement().checked = data.popupState.priceFilterCheck;
+        globalThis.PRICE_FILTER.getElement().value = data.popupState.maxPrice;
 
         // Updates
-        sortFilterSelect.dispatchEvent(new Event('change'))
-        priceFilterCheckbox.dispatchEvent(new Event('change'))
-        maxPriceSlider.dispatchEvent(new Event('input'))
+        globalThis.SORT_FILTER.getElement().dispatchEvent(new Event('change'))
+        globalThis.PRICE_FILTER_ACTIVE.getElement().dispatchEvent(new Event('change'))
+        globalThis.PRICE_FILTER.getElement().dispatchEvent(new Event('input'))
     });
 }
 
 function save() {
+    // const currentWebsite =
     chrome.storage.local.set({ popupState: { sortOrderIndex: sortFilterSelect.selectedIndex, priceFilterCheck: priceFilterCheckbox.checked, maxPrice: maxPriceSlider.value } })
 }
 

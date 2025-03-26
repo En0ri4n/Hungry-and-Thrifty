@@ -1,83 +1,7 @@
 <html lang="en">
 <head>
     <title>Hungry & Thrifty</title>
-    <style>
-        :root {
-            --dark-primary-color: #2C3930;
-            --dark-secondary-color: #2C3930;
-            --light-primary-color: #A27B5C;
-            --light-secondary-color: #DCD7C9;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Lucida Fax', sans-serif;
-        }
-
-        body {
-            width: 250px;
-            text-align: center;
-
-            background-color: var(--light-primary-color);
-
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-            row-gap: 0.75rem;
-
-            padding: 8px;
-
-            h1 {
-                width: 100%;
-                background-color: rgba(255, 255, 255, 0.51);
-                color: var(--dark-primary-color);
-                border-radius: 5px;
-
-                padding: 10px 0;
-            }
-
-            #unsupported-site, .supported {
-                display: none;
-            }
-
-            .option {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-
-                background-color: rgba(255, 255, 255, 0.29);
-                padding: 3px;
-                border-radius: 5px;
-
-                label {
-                    font-size: 1rem;
-                    color: black;
-                }
-
-                input {
-                    width: 100%;
-                }
-
-                select {
-                    width: 100%;
-                    background-color: var(--light-secondary-color);
-                    border-color: transparent;
-                    border-radius: 4px;
-                    height: 1.3rem;
-                }
-            }
-
-            #reset {
-                font-size: 1rem;
-                width: 50%;
-                border-color: transparent;
-                border-radius: 4px;
-                background-color: var(--light-secondary-color);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="popup.css">
 </head>
 <body>
 <h1>Hungry & Thrifty</h1>
@@ -99,8 +23,14 @@
     <label for="max-price"></label>
     <input type="range" id="max-price" min="5" step="0.5" value="10" max="20" disabled>
 </div>
+<div class="option supported">
+    <label for="search-filter">Chercher un plat</label>
+    <label for="active-search-filter"></label>
+    <input type="checkbox" id="active-search-filter">
+    <input id="search-filter" type="text">
+</div>
 <button id="reset" class="supported">Reset</button>
 <p>By En0ri4n</p>
-<script src="popup.js"></script>
+<script type="module" src="popup.js"></script>
 </body>
 </html>
