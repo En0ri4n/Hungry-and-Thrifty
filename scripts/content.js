@@ -1,4 +1,6 @@
-
+/**
+ * @returns {FoodWebsite}
+ */
 function getWebsite() {
     return globalThis.getWebsiteByUrl(document.URL);
 }
