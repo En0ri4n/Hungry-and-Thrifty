@@ -58,6 +58,10 @@ body {
             border-color: transparent;
             border-radius: 4px;
             height: 1.3rem;
+
+            &:disabled {
+                background-color: #cac7bf;
+            }
         }
     }
 
