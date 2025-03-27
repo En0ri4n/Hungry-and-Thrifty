@@ -52,8 +52,6 @@ async function onLoad() {
     setDisplay('#unsupported-site', 'none');
     setDisplay('.supported', 'none');
 
-    console.log(globalThis.WEBSITES)
-
     if (!globalThis.WEBSITES.some(website => currentUrl.includes(website.url))) {
         setDisplay('#unsupported-site', 'block');
         return;
@@ -64,10 +62,68 @@ async function onLoad() {
     load();
 }
 
-function load() {
-    chrome.storage.local.get("popupDataState", async data => {
-        const website = getWebsiteByUrl(await getCurrentUrl());
-        website.loadFilters(data.popupDataState);
+/**
+ *
+ * @param website {FoodWebsite}
+ */
+function getDataStateName(website) {
+    return `${website.name.toLowerCase()}`
+}
+
+class Config {
+    constructor(name, serializedConfiguration) {
+        this.configurationName = name;
+        this.serializedConfiguration = serializedConfiguration;
+    }
+}
+
+class FilterConfigurations {
+    /**
+     * @param configurations {Config[]}
+     */
+    constructor(configurations) {
+        this.configurations = configurations;
+    }
+
+    has(name) {
+        for (let config of this.configurations) {
+            if (config.configurationName === name)
+                return true;
+        }
+    }
+
+    get(name) {
+        for (let config of this.configurations) {
+            if (config.configurationName === name)
+                return config;
+        }
+        return null;
+    }
+
+    /**
+     * @param configuration {Config}
+     */
+    addConfiguration(configuration) {
+        if (this.has(configuration.configurationName))
+            this.get(configuration.configurationName).serializedConfiguration = configuration.serializedConfiguration;
+        else
+            this.configurations.push(configuration);
+    }
+
+    static deserialize(json) {
+        const data = JSON.parse(json);
+        return new FilterConfigurations(data.configurations)
+    }
+}
+
+async function load() {
+    const website = getWebsiteByUrl(await getCurrentUrl());
+    chrome.storage.local.get("popupData", async data => {
+        const configurations = data.popupData ? FilterConfigurations.deserialize(data.popupData) : new FilterConfigurations([]);
+        if (!configurations.has(getDataStateName(website)))
+            return;
+
+        website.loadFilters(configurations.get(getDataStateName(website)).serializedConfiguration);
         globalThis.FILTERS.forEach(ff => {
             ff.setElementValue(website.getFilter(ff.uniqueId).value);
             ff.getElement().dispatchEvent(new Event('change'))
@@ -79,9 +135,13 @@ function load() {
 async function save(filter) {
     const website = await getWebsite();
     website.updateFilter(filter.toFilter());
-
     const json = getWebsiteByUrl(await getCurrentUrl()).saveFilters();
-    await chrome.storage.local.set({popupDataState: json});
+
+    chrome.storage.local.get("popupData", async data => {
+        const configurations = data.popupData ? FilterConfigurations.deserialize(data.popupData) : new FilterConfigurations([]);
+        configurations.addConfiguration(new Config(getDataStateName(website), json))
+        await chrome.storage.local.set({popupData: JSON.stringify(configurations)});
+    });
 }
 
 window.onload = onLoad();
