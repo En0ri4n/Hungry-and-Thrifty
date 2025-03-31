@@ -35,7 +35,7 @@ async function getWebsite() {
 
 function getCurrentUrl() {
     return new Promise((resolve, reject) => {
-        chrome.tabs.query({active: true}, function (tabs) {
+        chrome.tabs.query({active: true, lastFocusedWindow: true}, function (tabs) {
             const url = tabs[0].url;
             resolve(url);
         });
